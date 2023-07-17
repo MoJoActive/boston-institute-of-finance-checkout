@@ -94,7 +94,7 @@ export default class HostedFieldPaymentMethod extends Component<HostedFieldPayme
                         </FormFieldContainer>
                     )}
 
-                    {!!postalCodeId && (
+                    {/* {!!postalCodeId && ( */}
                         <FormFieldContainer additionalClassName="form-field--postCode">
                             <Label>
                                 <TranslatedString id="payment.postal_code_label" />
@@ -102,7 +102,7 @@ export default class HostedFieldPaymentMethod extends Component<HostedFieldPayme
 
                             <div id={postalCodeId} />
                         </FormFieldContainer>
-                    )}
+                    {/* )} */}
                 </div>
             </LoadingOverlay>
         );

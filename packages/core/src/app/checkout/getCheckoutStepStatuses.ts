@@ -5,7 +5,6 @@ import { createSelector } from 'reselect';
 import { isValidAddress } from '../address';
 import { EMPTY_ARRAY } from '../common/utility';
 import { SUPPORTED_METHODS } from '../customer';
-import { PaymentMethodId } from '../payment/paymentMethod';
 import {
     hasSelectedShippingOptions,
     hasUnassignedLineItems,
@@ -14,52 +13,52 @@ import {
 
 import CheckoutStepType from './CheckoutStepType';
 
-const getCustomerStepStatus = createSelector(
-    ({ data }: CheckoutSelectors) => data.getCheckout(),
-    ({ data }: CheckoutSelectors) => data.getCustomer(),
-    ({ data }: CheckoutSelectors) => data.getBillingAddress(),
-    ({ data }: CheckoutSelectors) => data.getConfig(),
-    (checkout, customer, billingAddress, config) => {
-        const hasEmail = !!(
-            (customer && customer.email) ||
-            (billingAddress && billingAddress.email)
-        );
-        const isUsingWallet =
-            checkout && checkout.payments
-                ? checkout.payments.some(
-                      (payment) => SUPPORTED_METHODS.indexOf(payment.providerId) >= 0,
-                  )
-                : false;
-        const isGuest = !!(customer && customer.isGuest);
-        const isComplete = hasEmail || isUsingWallet;
-        const isEditable = isComplete && !isUsingWallet && isGuest;
+// const getCustomerStepStatus = createSelector(
+//     ({ data }: CheckoutSelectors) => data.getCheckout(),
+//     ({ data }: CheckoutSelectors) => data.getCustomer(),
+//     ({ data }: CheckoutSelectors) => data.getBillingAddress(),
+//     ({ data }: CheckoutSelectors) => data.getConfig(),
+//     (checkout, customer, billingAddress, config) => {
+//         const hasEmail = !!(
+//             (customer && customer.email) ||
+//             (billingAddress && billingAddress.email)
+//         );
+//         const isUsingWallet =
+//             checkout && checkout.payments
+//                 ? checkout.payments.some(
+//                       (payment) => SUPPORTED_METHODS.indexOf(payment.providerId) >= 0,
+//                   )
+//                 : false;
+//         const isGuest = !!(customer && customer.isGuest);
+//         const isComplete = hasEmail || isUsingWallet;
+//         const isEditable = isComplete && !isUsingWallet && isGuest;
 
-        // StripeLink is a UX that is only available with StripeUpe and will only be displayed for BC guest users,
-        // it uses its own components in the customer and shipping steps, unfortunately in order to preserve the UX
-        // when reloading the checkout page it's necessary to refill the stripe components with the information saved.
-        // In this step, we require that the customer strategy be reloaded the first time.
-        const isUsingStripeLinkAndCheckoutPageIsReloaded = !isUsingWallet &&
-            config?.checkoutSettings.providerWithCustomCheckout === PaymentMethodId.StripeUPE && hasEmail && isGuest;
+//         // StripeLink is a UX that is only available with StripeUpe and will only be displayed for BC guest users,
+//         // it uses its own components in the customer and shipping steps, unfortunately in order to preserve the UX
+//         // when reloading the checkout page it's necessary to refill the stripe components with the information saved.
+//         // In this step, we require that the customer strategy be reloaded the first time.
+//         const isUsingStripeLinkAndCheckoutPageIsReloaded = !isUsingWallet &&
+//             config?.checkoutSettings.providerWithCustomCheckout === PaymentMethodId.StripeUPE && hasEmail && isGuest;
 
-        if (isUsingStripeLinkAndCheckoutPageIsReloaded) {
-            return {
-                type: CheckoutStepType.Customer,
-                isActive: false,
-                isComplete: customer?.isStripeLinkAuthenticated !== undefined ?? isComplete,
-                isEditable,
-                isRequired: true,
-            };
-        }
+//         if (isUsingStripeLinkAndCheckoutPageIsReloaded) {
+//             return {
+//                 type: CheckoutStepType.Customer,
+//                 isActive: false,
+//                 isComplete: customer?.isStripeLinkAuthenticated !== undefined ?? isComplete,
+//                 isEditable,
+//                 isRequired: true,
+//             };
+//         }
 
-        return {
-            type: CheckoutStepType.Customer,
-            isActive: false,
-            isComplete,
-            isEditable,
-            isRequired: true,
-        };
-    },
-);
+//         return {
+//             type: CheckoutStepType.Customer,
+//             isActive: false,
+//             isComplete,
+//             isEditable,
+//             isRequired: true,
+//         };
+//     },
+// );
 
 const getBillingStepStatus = createSelector(
     ({ data }: CheckoutSelectors) => data.getCheckout(),
@@ -164,17 +163,16 @@ const getPaymentStepStatus = createSelector(
 );
 
 const getCheckoutStepStatuses = createSelector(
-    getCustomerStepStatus,
     getShippingStepStatus,
     getBillingStepStatus,
     getPaymentStepStatus,
-    (customerStep, shippingStep, billingStep, paymentStep) => {
-        const steps = compact([customerStep, shippingStep, billingStep, paymentStep]);
+    (shippingStep, billingStep, paymentStep) => {
+        const steps = compact([shippingStep, billingStep, paymentStep]);
 
         const defaultActiveStep =
             steps.find((step) => !step.isComplete && step.isRequired) || steps[steps.length - 1];
 
-        return steps.map((step, index) => {
+        const mapped =  steps.map((step, index) => {
             const isPrevStepComplete = steps
                 .slice(0, index)
                 .every((prevStep) => prevStep.isComplete || !prevStep.isRequired);
@@ -187,6 +185,8 @@ const getCheckoutStepStatuses = createSelector(
                 isEditable: isPrevStepComplete && step.isEditable,
             };
         });
+
+        return mapped;
     },
 );
 

@@ -3,7 +3,6 @@ import React, { FunctionComponent, memo } from 'react';
 import { TranslatedString } from '@bigcommerce/checkout/locale';
 
 import { preventDefault } from '../common/dom';
-import { Legend } from '../ui/form';
 
 interface ShippingHeaderProps {
     isMultiShippingMode: boolean;
@@ -14,12 +13,12 @@ interface ShippingHeaderProps {
 
 const ShippingHeader: FunctionComponent<ShippingHeaderProps> = ({
     isMultiShippingMode,
-    isGuest,
+    // isGuest,
     onMultiShippingChange,
     shouldShowMultiShipping,
 }) => (
     <div className="form-legend-container">
-        <Legend testId="shipping-address-heading">
+        {/* <Legend testId="shipping-address-heading">
             <TranslatedString
                 id={
                     isMultiShippingMode
@@ -29,7 +28,7 @@ const ShippingHeader: FunctionComponent<ShippingHeaderProps> = ({
                         : 'shipping.shipping_address_heading'
                 }
             />
-        </Legend>
+        </Legend> */}
 
         {shouldShowMultiShipping && (
             <a

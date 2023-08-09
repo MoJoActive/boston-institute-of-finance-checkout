@@ -33,6 +33,7 @@ class ShippingFormFooter extends PureComponent<ShippingFormFooterProps> {
             <>
                 <Fieldset
                     id="checkout-shipping-options"
+                    style={{ display: 'none' }}
                     legend={
                         <>
                             <Legend>

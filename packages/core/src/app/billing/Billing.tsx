@@ -9,7 +9,6 @@ import {
 import { noop } from 'lodash';
 import React, { Component, ReactNode } from 'react';
 
-import { TranslatedString } from '@bigcommerce/checkout/locale';
 import { CheckoutContextProps } from '@bigcommerce/checkout/payment-integration-api';
 import { AddressFormSkeleton } from '@bigcommerce/checkout/ui';
 
@@ -17,7 +16,6 @@ import { isEqualAddress, mapAddressFromFormValues } from '../address';
 import { withCheckout } from '../checkout';
 import { EMPTY_ARRAY, isFloatingLabelEnabled } from '../common/utility';
 import { getShippableItemsCount } from '../shipping';
-import { Legend } from '../ui/form';
 
 import BillingForm, { BillingFormValues } from './BillingForm';
 import getBillingMethodId from './getBillingMethodId';
@@ -66,11 +64,11 @@ class Billing extends Component<BillingProps & WithCheckoutBillingProps> {
         return (
             <AddressFormSkeleton isLoading={isInitializing}>
                 <div className="checkout-form">
-                    <div className="form-legend-container">
+                    {/* <div className="form-legend-container">
                         <Legend testId="billing-address-heading">
                             <TranslatedString id="billing.billing_address_heading" />
                         </Legend>
-                    </div>
+                    </div> */}
                     <BillingForm
                         {...props}
                         onSubmit={this.handleSubmit}

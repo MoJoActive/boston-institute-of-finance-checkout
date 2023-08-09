@@ -8,7 +8,6 @@ import HostedCreditCardCodeField from './HostedCreditCardCodeField';
 import HostedCreditCardExpiryField from './HostedCreditCardExpiryField';
 import HostedCreditCardNameField from './HostedCreditCardNameField';
 import HostedCreditCardNumberField from './HostedCreditCardNumberField';
-import HostedCreditCardPostalCodeField from './HostedCreditCardPostalCodeField';
 
 export interface HostedCreditCardFieldsetProps {
   additionalFields?: ReactNode;
@@ -26,7 +25,6 @@ const HostedCreditCardFieldset: FunctionComponent<HostedCreditCardFieldsetProps>
   cardExpiryId,
   cardNameId,
   cardNumberId,
-  cardPostalCodeId,
   focusedFieldType,
 }) => (
   <Fieldset
@@ -62,14 +60,6 @@ const HostedCreditCardFieldset: FunctionComponent<HostedCreditCardFieldsetProps>
           appearFocused={focusedFieldType === 'cardCode'}
           id={cardCodeId}
           name="hostedForm.errors.cardCode"
-        />
-      )}
-
-      {cardPostalCodeId && (
-        <HostedCreditCardPostalCodeField
-          appearFocused={focusedFieldType === 'cardPostalCode'}
-          id={cardPostalCodeId}
-          name="hostedForm.errors.cardPostalCode"
         />
       )}
 

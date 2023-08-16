@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
     Address,
     AddressRequestBody,
@@ -218,7 +219,6 @@ class Shipping extends Component<ShippingProps & WithCheckoutShippingProps, Ship
         const {
             customerMessage,
             updateCheckout,
-            updateShippingAddress,
             updateBillingAddress,
             navigateNextStep,
             onUnhandledError,
@@ -232,7 +232,7 @@ class Shipping extends Component<ShippingProps & WithCheckoutShippingProps, Ship
         const hasRemoteBilling = this.hasRemoteBilling(methodId);
 
         if (!isEqualAddress(updatedShippingAddress, shippingAddress) || shippingAddress?.shouldSaveAddress !== updatedShippingAddress?.shouldSaveAddress) {
-            promises.push(updateShippingAddress(updatedShippingAddress || {}));
+            // promises.push(updateShippingAddress(updatedShippingAddress || {}));
         }
 
         if (

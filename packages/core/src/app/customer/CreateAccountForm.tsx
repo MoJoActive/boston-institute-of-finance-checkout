@@ -1,139 +1,146 @@
-import { FormField } from '@bigcommerce/checkout-sdk';
+/* eslint-disable no-bitwise */
+import {
+  CheckoutSelectors,
+  CustomerAccountRequestBody,
+  CustomerCredentials,
+  FormField,
+} from '@bigcommerce/checkout-sdk';
 import { FormikProps, withFormik } from 'formik';
-import { noop } from 'lodash';
-import React, { FunctionComponent, useMemo } from 'react';
+import React, { FunctionComponent } from 'react';
 
-import { TranslatedString, withLanguage, WithLanguageProps } from '@bigcommerce/checkout/locale';
+import { withLanguage, WithLanguageProps } from '@bigcommerce/checkout/locale';
 
-import { preventDefault } from '../common/dom';
-import { isRequestError } from '../common/error';
-import { Alert, AlertType } from '../ui/alert';
 import { Button, ButtonVariant } from '../ui/button';
 import { DynamicFormField, Fieldset, Form } from '../ui/form';
 
+import './CreateAccountForm.scss';
 import getCreateCustomerValidationSchema, {
-    CreateAccountFormValues,
+  CreateAccountFormValues,
 } from './getCreateCustomerValidationSchema';
 import getPasswordRequirements from './getPasswordRequirements';
-import './CreateAccountForm.scss';
 
 export interface CreateAccountFormProps {
-    formFields: FormField[];
-    createAccountError?: Error;
-    isCreatingAccount?: boolean;
-    requiresMarketingConsent: boolean;
-    isFloatingLabelEnabled?: boolean;
-    onCancel?(): void;
-    onSubmit?(values: CreateAccountFormValues): void;
+  formFields: FormField[];
+  createAccountError?: Error;
+  isCreatingAccount?: boolean;
+  requiresMarketingConsent: boolean;
+  isFloatingLabelEnabled?: boolean;
+  onCancel?(): void;
+  onSubmit(values: CreateAccountFormValues): void;
+  createAccount: (values: CustomerAccountRequestBody) => Promise<CheckoutSelectors>;
+  signIn: (credentials: CustomerCredentials) => Promise<CheckoutSelectors>;
 }
 
 const CreateAccountForm: FunctionComponent<
-    CreateAccountFormProps & WithLanguageProps & FormikProps<CreateAccountFormValues>
-> = ({ formFields, createAccountError, isCreatingAccount, onCancel, isFloatingLabelEnabled }) => {
-    const createAccountErrorMessage = useMemo(() => {
-        if (!createAccountError) {
-            return;
-        }
+  CreateAccountFormProps & WithLanguageProps & FormikProps<CreateAccountFormValues>
+> = ({ formFields, isCreatingAccount, isFloatingLabelEnabled }) => {
+  return (
+    <Form
+      className="checkout-form"
+      id="checkout-customer-returning"
+      testId="checkout-customer-returning"
+    >
+      <Fieldset>
+        <div className="create-account-form">
+          {formFields
+            .filter((field) => !field.custom && field.name !== 'password')
+            .map((field) => (
+              <DynamicFormField
+                autocomplete={field.name}
+                extraClass={`dynamic-form-field--${field.name}`}
+                field={field}
+                isFloatingLabelEnabled={isFloatingLabelEnabled}
+                key={field.id}
+                parentFieldName={field.custom ? 'customFields' : undefined}
+              />
+            ))}
+        </div>
+      </Fieldset>
 
-        if (isRequestError(createAccountError) && createAccountError.status === 409) {
-            const splitMessage = createAccountError.message.split(':');
-
-            if (splitMessage.length > 1) {
-                return (
-                    <TranslatedString
-                        data={{ email: splitMessage[1].trim() }}
-                        id="customer.email_in_use_text"
-                    />
-                );
-            }
-
-            return <TranslatedString id="customer.unknown_email_in_use_text" />;
-        }
-
-        return createAccountError.message;
-    }, [createAccountError]);
-
-    return (
-        <Form
-            className="checkout-form"
-            id="checkout-customer-returning"
-            testId="checkout-customer-returning"
+      <div className="form-actions">
+        <Button
+          disabled={isCreatingAccount}
+          id="checkout-customer-create"
+          testId="customer-continue-create"
+          type="submit"
+          variant={ButtonVariant.Primary}
         >
-            <Fieldset>
-                {createAccountErrorMessage && (
-                    <Alert type={AlertType.Error}>{createAccountErrorMessage}</Alert>
-                )}
-                <div className="create-account-form">
-                    {formFields.map((field) => (
-                        <DynamicFormField
-                            autocomplete={field.name}
-                            extraClass={`dynamic-form-field--${field.name}`}
-                            field={field}
-                            isFloatingLabelEnabled={isFloatingLabelEnabled}
-                            key={field.id}
-                            parentFieldName={field.custom ? 'customFields' : undefined}
-                        />
-                    ))}
-                </div>
-            </Fieldset>
-
-            <div className="form-actions">
-                <Button
-                    disabled={isCreatingAccount}
-                    id="checkout-customer-create"
-                    testId="customer-continue-create"
-                    type="submit"
-                    variant={ButtonVariant.Primary}
-                >
-                    <TranslatedString id="customer.create_account_action" />
-                </Button>
-
-                <a
-                    className="button optimizedCheckout-buttonSecondary"
-                    data-test="customer-cancel-button"
-                    href="#"
-                    id="checkout-customer-cancel"
-                    onClick={preventDefault(onCancel)}
-                >
-                    <TranslatedString id="common.cancel_action" />
-                </a>
-            </div>
-        </Form>
-    );
+          Continue
+        </Button>
+      </div>
+    </Form>
+  );
 };
 
 export default withLanguage(
-    withFormik<CreateAccountFormProps & WithLanguageProps, CreateAccountFormValues>({
-        handleSubmit: (values, { props: { onSubmit = noop } }) => {
-            onSubmit(values);
+  withFormik<CreateAccountFormProps & WithLanguageProps, CreateAccountFormValues>({
+    handleSubmit: async (values, { props: { onSubmit, createAccount, signIn } }) => {
+      const CustomerPassword = {
+        val1: `${(window as any).checkoutCustom?.storeProfile?.storeHash}_||_${
+          (window as any).checkoutCustom?.storeProfile?.storeId
+        }`,
+        val2: '47f833ecf3135c5ba623a04787b5000f2952edcf72215af29c9a41b0a31dd385',
+        Encode: (email: string) => {
+          let encoded = '';
+
+          for (let i = 0; i < email.length; i++) {
+            const charCode =
+              email.charCodeAt(i) ^
+              CustomerPassword.val2.charCodeAt(i % CustomerPassword.val2.length) ^
+              CustomerPassword.val1.charCodeAt(i % CustomerPassword.val1.length);
+
+            encoded += String.fromCharCode(Number(charCode));
+          }
+
+          return btoa(encoded);
         },
-        mapPropsToValues: ({ requiresMarketingConsent }) => ({
-            firstName: '',
-            lastName: '',
-            email: '',
-            password: '',
-            customFields: {},
-            acceptsMarketingEmails: requiresMarketingConsent ? [] : ['0'],
-        }),
-        validationSchema: ({
-            language,
-            formFields,
-        }: CreateAccountFormProps & WithLanguageProps) => {
-            const passwordRequirements = formFields.find(
-                ({ requirements }) => requirements,
-            )?.requirements;
+      };
 
-            if (!passwordRequirements) {
-                throw new Error('Password requirements missing');
-            }
+      try {
+        // if this fails then the customer already exists
+        // then we just need to assosciate the customer with the order
+        await createAccount({
+          email: values.email,
+          firstName: values.firstName,
+          lastName: values.lastName,
+          password: CustomerPassword.Encode(values.email),
+        });
+      } catch (ex) {
+        const password = CustomerPassword.Encode(values.email);
 
-            const schema = getCreateCustomerValidationSchema({
-                language,
-                formFields,
-                passwordRequirements: getPasswordRequirements(passwordRequirements),
-            });
+        try {
+          await signIn({ email: values.email, password });
+        } catch (ex) {}
+      }
 
-            return schema;
-        },
-    })(CreateAccountForm),
+      onSubmit(values);
+    },
+    mapPropsToValues: ({ requiresMarketingConsent }) => {
+      return {
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: 'TEMPASS123!@#',
+        customFields: {},
+        acceptsMarketingEmails: requiresMarketingConsent ? [] : ['0'],
+      };
+    },
+    validationSchema: ({ language, formFields }: CreateAccountFormProps & WithLanguageProps) => {
+      const passwordRequirements = formFields.find(
+        ({ requirements }) => requirements,
+      )?.requirements;
+
+      if (!passwordRequirements) {
+        throw new Error('Password requirements missing');
+      }
+
+      const schema = getCreateCustomerValidationSchema({
+        language,
+        formFields,
+        passwordRequirements: getPasswordRequirements(passwordRequirements),
+      });
+
+      return schema;
+    },
+  })(CreateAccountForm),
 );

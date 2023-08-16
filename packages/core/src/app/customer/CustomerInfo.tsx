@@ -2,7 +2,6 @@ import { CheckoutSelectors, CustomerRequestOptions, CustomError } from '@bigcomm
 import { noop } from 'lodash';
 import React, { FunctionComponent } from 'react';
 
-import { TranslatedString } from '@bigcommerce/checkout/locale';
 import { CheckoutContextProps } from '@bigcommerce/checkout/payment-integration-api';
 
 import { withCheckout } from '../checkout';
@@ -74,7 +73,7 @@ const CustomerInfo: FunctionComponent<CustomerInfoProps & WithCheckoutCustomerIn
                         testId="sign-out-link"
                         variant={ButtonVariant.Secondary}
                     >
-                        <TranslatedString id="customer.sign_out_action" />
+                        Edit
                     </Button>
                 )}
             </div>

@@ -262,7 +262,6 @@ export default function withHostedCreditCardFieldset<
             cardExpiryId={getHostedFieldId('ccExpiry')}
             cardNameId={getHostedFieldId('ccName')}
             cardNumberId={getHostedFieldId('ccNumber')}
-            cardPostalCodeId={getHostedFieldId('ccPostalCode')}
             focusedFieldType={focusedFieldType}
           />
         }

@@ -15,7 +15,6 @@ export interface HostedCreditCardFieldsetProps {
   cardExpiryId: string;
   cardNameId?: string;
   cardNumberId: string;
-  cardPostalCodeId?: string;
   focusedFieldType?: string;
 }
 
@@ -62,6 +61,14 @@ const HostedCreditCardFieldset: FunctionComponent<HostedCreditCardFieldsetProps>
           name="hostedForm.errors.cardCode"
         />
       )}
+
+      {/* {cardPostalCodeId && (
+        <HostedCreditCardPostalCodeField
+          appearFocused={focusedFieldType === 'cardPostalCode'}
+          id={cardPostalCodeId}
+          name="hostedForm.errors.cardPostalCode"
+        />
+      )} */}
 
       {additionalFields}
     </div>

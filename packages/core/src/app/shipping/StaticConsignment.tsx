@@ -1,9 +1,11 @@
 import { Address, Cart, Consignment } from '@bigcommerce/checkout-sdk';
 import React, { FunctionComponent, memo } from 'react';
 
+import AddressType from '../address/AddressType';
+import StaticAddress from '../address/StaticAddress';
 
-import { StaticShippingOption } from './shippingOption';
 import './StaticConsignment.scss';
+import { StaticShippingOption } from './shippingOption';
 import StaticConsignmentItemList from './StaticConsignmentItemList';
 
 interface StaticConsignmentProps {
@@ -21,13 +23,9 @@ const StaticConsignment: FunctionComponent<StaticConsignmentProps> = ({
 }) => {
   const { shippingAddress: address, selectedShippingOption } = consignment;
 
-  const containsOnlyDigital = cart.lineItems.physicalItems.every((o: any) =>
-    o.customFields.some((cf: any) => cf.name === 'Digital' && cf.value === 'Yes'),
-  );
-
   return (
     <div className="staticConsignment">
-      {/* <StaticAddress address={address} type={AddressType.Shipping} /> */}
+      <StaticAddress address={address} type={AddressType.Shipping} />
 
       <div className="vcard checkout-address--static">
         {(address.firstName || address.lastName) && (
@@ -46,7 +44,7 @@ const StaticConsignment: FunctionComponent<StaticConsignmentProps> = ({
 
       {!compactView && <StaticConsignmentItemList cart={cart} consignment={consignment} />}
 
-      {selectedShippingOption && !containsOnlyDigital && (
+      {selectedShippingOption && (
         <div>
           <div className="shippingOption shippingOption--alt shippingOption--selected">
             <StaticShippingOption

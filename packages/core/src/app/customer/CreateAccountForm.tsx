@@ -18,6 +18,7 @@ import getCreateCustomerValidationSchema, {
   CreateAccountFormValues,
 } from './getCreateCustomerValidationSchema';
 import getPasswordRequirements from './getPasswordRequirements';
+import mapCreateAccountFromFormValues from './mapCreateAccountFromFormValues';
 
 export interface CreateAccountFormProps {
   formFields: FormField[];
@@ -43,7 +44,31 @@ const CreateAccountForm: FunctionComponent<
       <Fieldset>
         <div className="create-account-form">
           {formFields
-            .filter((field) => !field.custom && field.name !== 'password')
+            .filter((field) => field.name !== 'password')
+            .filter((field) => field.name !== 'field_26')
+            .map((field) => {
+              if (field.name === 'firstName') {
+                return { ...field, label: 'Student First Name' };
+              }
+
+              if (field.name === 'lastName') {
+                return { ...field, label: 'Student Last Name' };
+              }
+
+              if (field.name === 'email') {
+                return { ...field, label: 'Student Email' };
+              }
+
+              if (field.label === 'Phone') {
+                return { ...field, label: 'Student Phone' };
+              }
+
+              if (field.label === 'Company') {
+                return { ...field, label: 'Student Company' };
+              }
+
+              return field;
+            })
             .map((field) => (
               <DynamicFormField
                 autocomplete={field.name}
@@ -51,6 +76,7 @@ const CreateAccountForm: FunctionComponent<
                 field={field}
                 isFloatingLabelEnabled={isFloatingLabelEnabled}
                 key={field.id}
+                label={field.label}
                 parentFieldName={field.custom ? 'customFields' : undefined}
               />
             ))}
@@ -96,14 +122,20 @@ export default withLanguage(
         },
       };
 
+      const mappedFields = mapCreateAccountFromFormValues(values);
+
+      sessionStorage.setItem('studentInfo', JSON.stringify(mappedFields.customFields));
+
       try {
         // if this fails then the customer already exists
         // then we just need to assosciate the customer with the order
+
         await createAccount({
           email: values.email,
           firstName: values.firstName,
           lastName: values.lastName,
           password: CustomerPassword.Encode(values.email),
+          customFields: mappedFields.customFields,
         });
       } catch (ex) {
         const password = CustomerPassword.Encode(values.email);

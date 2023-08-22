@@ -1,9 +1,9 @@
 import {
-    Address,
-    CheckoutSelectors,
-    Country,
-    Customer,
-    FormField,
+  Address,
+  CheckoutSelectors,
+  Country,
+  Customer,
+  FormField,
 } from '@bigcommerce/checkout-sdk';
 import { FormikProps, withFormik } from 'formik';
 import React, { createRef, PureComponent, ReactNode, RefObject } from 'react';
@@ -13,13 +13,13 @@ import { TranslatedString, withLanguage, WithLanguageProps } from '@bigcommerce/
 import { AddressFormSkeleton } from '@bigcommerce/checkout/ui';
 
 import {
-    AddressForm,
-    AddressFormValues,
-    AddressSelect,
-    getAddressFormFieldsValidationSchema,
-    getTranslateAddressError,
-    isValidCustomerAddress,
-    mapAddressToFormValues,
+  AddressForm,
+  AddressFormValues,
+  AddressSelect,
+  getAddressFormFieldsValidationSchema,
+  getTranslateAddressError,
+  isValidCustomerAddress,
+  mapAddressToFormValues,
 } from '../address';
 import { getCustomFormFieldsValidationSchema } from '../formFields';
 import { OrderComments } from '../orderComments';
@@ -32,182 +32,210 @@ import StaticBillingAddress from './StaticBillingAddress';
 export type BillingFormValues = AddressFormValues & { orderComment: string };
 
 export interface BillingFormProps {
-    billingAddress?: Address;
-    countries: Country[];
-    countriesWithAutocomplete: string[];
-    customer: Customer;
-    customerMessage: string;
-    googleMapsApiKey: string;
-    isUpdating: boolean;
-    methodId?: string;
-    shouldShowOrderComments: boolean;
-    isFloatingLabelEnabled?: boolean;
-    getFields(countryCode?: string): FormField[];
-    onSubmit(values: BillingFormValues): void;
-    onUnhandledError(error: Error): void;
-    updateAddress(address: Partial<Address>): Promise<CheckoutSelectors>;
+  billingAddress?: Address;
+  countries: Country[];
+  countriesWithAutocomplete: string[];
+  customer: Customer;
+  customerMessage: string;
+  googleMapsApiKey: string;
+  isUpdating: boolean;
+  methodId?: string;
+  shouldShowOrderComments: boolean;
+  isFloatingLabelEnabled?: boolean;
+  getFields(countryCode?: string): FormField[];
+  onSubmit(values: BillingFormValues): void;
+  onUnhandledError(error: Error): void;
+  updateAddress(address: Partial<Address>): Promise<CheckoutSelectors>;
 }
 
 interface BillingFormState {
-    isResettingAddress: boolean;
+  isResettingAddress: boolean;
 }
 
 class BillingForm extends PureComponent<
-    BillingFormProps & WithLanguageProps & FormikProps<BillingFormValues>,
-    BillingFormState
+  BillingFormProps & WithLanguageProps & FormikProps<BillingFormValues>,
+  BillingFormState
 > {
-    state: BillingFormState = {
-        isResettingAddress: false,
-    };
+  state: BillingFormState = {
+    isResettingAddress: false,
+  };
 
-    private addressFormRef: RefObject<HTMLFieldSetElement> = createRef();
+  private addressFormRef: RefObject<HTMLFieldSetElement> = createRef();
 
-    render(): ReactNode {
-        const {
-            googleMapsApiKey,
-            billingAddress,
-            countriesWithAutocomplete,
-            customer: { addresses, isGuest },
-            getFields,
-            countries,
-            isUpdating,
-            setFieldValue,
-            shouldShowOrderComments,
-            values,
-            methodId,
-            isFloatingLabelEnabled,
-        } = this.props;
+  render(): ReactNode {
+    const {
+      googleMapsApiKey,
+      billingAddress,
+      countriesWithAutocomplete,
+      customer: { addresses, isGuest },
+      getFields,
+      countries,
+      isUpdating,
+      setFieldValue,
+      shouldShowOrderComments,
+      values,
+      methodId,
+      isFloatingLabelEnabled,
+    } = this.props;
 
-        const shouldRenderStaticAddress = methodId === 'amazonpay';
-        const allFormFields = getFields(values.countryCode);
-        const customFormFields = allFormFields.filter(({ custom }) => custom);
-        const hasCustomFormFields = customFormFields.length > 0;
-        const editableFormFields =
-            shouldRenderStaticAddress && hasCustomFormFields ? customFormFields : allFormFields;
-        const { isResettingAddress } = this.state;
-        const hasAddresses = addresses && addresses.length > 0;
-        const hasValidCustomerAddress =
-            billingAddress &&
-            isValidCustomerAddress(
-                billingAddress,
-                addresses,
-                getFields(billingAddress.countryCode),
-            );
+    const shouldRenderStaticAddress = methodId === 'amazonpay';
+    const allFormFields = getFields(values.countryCode);
+    const customFormFields = allFormFields.filter(({ custom }) => custom);
+    const hasCustomFormFields = customFormFields.length > 0;
+    const editableFormFields =
+      shouldRenderStaticAddress && hasCustomFormFields ? customFormFields : allFormFields;
+    const { isResettingAddress } = this.state;
+    const hasAddresses = addresses && addresses.length > 0;
+    const hasValidCustomerAddress =
+      billingAddress &&
+      isValidCustomerAddress(billingAddress, addresses, getFields(billingAddress.countryCode));
 
-        return (
-            <Form autoComplete="on">
-                {shouldRenderStaticAddress && billingAddress && (
-                    <div className="form-fieldset">
-                        <StaticBillingAddress address={billingAddress} />
-                    </div>
-                )}
+    return (
+      <Form autoComplete="on">
+        {shouldRenderStaticAddress && billingAddress && (
+          <div className="form-fieldset">
+            <StaticBillingAddress address={billingAddress} />
+          </div>
+        )}
 
-                <Fieldset id="checkoutBillingAddress" ref={this.addressFormRef}>
-                    {hasAddresses && !shouldRenderStaticAddress && (
-                        <Fieldset id="billingAddresses">
-                            <LoadingOverlay isLoading={isResettingAddress}>
-                                <AddressSelect
-                                    addresses={addresses}
-                                    onSelectAddress={this.handleSelectAddress}
-                                    onUseNewAddress={this.handleUseNewAddress}
-                                    selectedAddress={
-                                        hasValidCustomerAddress ? billingAddress : undefined
-                                    }
-                                />
-                            </LoadingOverlay>
-                        </Fieldset>
-                    )}
+        <Fieldset id="checkoutBillingAddress" ref={this.addressFormRef}>
+          {hasAddresses && !shouldRenderStaticAddress && (
+            <Fieldset id="billingAddresses">
+              <LoadingOverlay isLoading={isResettingAddress}>
+                <AddressSelect
+                  addresses={addresses}
+                  onSelectAddress={this.handleSelectAddress}
+                  onUseNewAddress={this.handleUseNewAddress}
+                  selectedAddress={hasValidCustomerAddress ? billingAddress : undefined}
+                />
+              </LoadingOverlay>
+            </Fieldset>
+          )}
 
-                    {!hasValidCustomerAddress && (
-                        <AddressFormSkeleton isLoading={isResettingAddress}>
-                            <AddressForm
-                                countries={countries}
-                                countriesWithAutocomplete={countriesWithAutocomplete}
-                                countryCode={values.countryCode}
-                                formFields={editableFormFields}
-                                googleMapsApiKey={googleMapsApiKey}
-                                isFloatingLabelEnabled={isFloatingLabelEnabled}
-                                setFieldValue={setFieldValue}
-                                shouldShowSaveAddress={!isGuest}
-                            />
-                        </AddressFormSkeleton>
-                    )}
-                </Fieldset>
+          {!hasValidCustomerAddress && (
+            <AddressFormSkeleton isLoading={isResettingAddress}>
+              <AddressForm
+                countries={countries}
+                countriesWithAutocomplete={countriesWithAutocomplete}
+                countryCode={values.countryCode}
+                formFields={editableFormFields
+                  .map((o) => {
+                    console.log(o);
 
-                {shouldShowOrderComments && <OrderComments />}
+                    if (o.name === 'firstName') {
+                      return { ...o, label: 'Billing First Name' };
+                    }
 
-                <div className="form-actions">
-                    <Button
-                        disabled={isUpdating || isResettingAddress}
-                        id="checkout-billing-continue"
-                        isLoading={isUpdating || isResettingAddress}
-                        type="submit"
-                        variant={ButtonVariant.Primary}
-                    >
-                        <TranslatedString id="common.continue_action" />
-                    </Button>
-                </div>
-            </Form>
-        );
+                    if (o.name === 'lastName') {
+                      return { ...o, label: 'Billing Last Name' };
+                    }
+
+                    if (o.name === 'address1') {
+                      return { ...o, label: 'Billing Address 1' };
+                    }
+
+                    if (o.name === 'address2') {
+                      return { ...o, label: 'Billing Address 2' };
+                    }
+
+                    if (o.name === 'city') {
+                      return { ...o, label: 'Billing City' };
+                    }
+
+                    if (o.name === 'countryCode') {
+                      return { ...o, label: 'Billing Country' };
+                    }
+
+                    if (o.name === 'stateOrProvinceCode') {
+                      return { ...o, label: 'Billing State/Province' };
+                    }
+
+                    if (o.name === 'postalCode') {
+                      return { ...o, label: 'Billing Postal Code' };
+                    }
+
+                    return o;
+                  })
+                  .filter((o) => ['company', 'phone'].indexOf(o.name) === -1)}
+                googleMapsApiKey={googleMapsApiKey}
+                isFloatingLabelEnabled={isFloatingLabelEnabled}
+                setFieldValue={setFieldValue}
+                shouldShowSaveAddress={!isGuest}
+              />
+            </AddressFormSkeleton>
+          )}
+        </Fieldset>
+
+        {shouldShowOrderComments && <OrderComments />}
+
+        <div className="form-actions">
+          <Button
+            disabled={isUpdating || isResettingAddress}
+            id="checkout-billing-continue"
+            isLoading={isUpdating || isResettingAddress}
+            type="submit"
+            variant={ButtonVariant.Primary}
+          >
+            <TranslatedString id="common.continue_action" />
+          </Button>
+        </div>
+      </Form>
+    );
+  }
+
+  private handleSelectAddress: (address: Partial<Address>) => void = async (address) => {
+    const { updateAddress, onUnhandledError } = this.props;
+
+    this.setState({ isResettingAddress: true });
+
+    try {
+      await updateAddress(address);
+    } catch (error) {
+      if (error instanceof Error) {
+        onUnhandledError(error);
+      }
+    } finally {
+      this.setState({ isResettingAddress: false });
     }
+  };
 
-    private handleSelectAddress: (address: Partial<Address>) => void = async (address) => {
-        const { updateAddress, onUnhandledError } = this.props;
-
-        this.setState({ isResettingAddress: true });
-
-        try {
-            await updateAddress(address);
-        } catch (error) {
-            if (error instanceof Error) {
-                onUnhandledError(error);
-            }
-        } finally {
-            this.setState({ isResettingAddress: false });
-        }
-    };
-
-    private handleUseNewAddress: () => void = () => {
-        this.handleSelectAddress({});
-    };
+  private handleUseNewAddress: () => void = () => {
+    this.handleSelectAddress({});
+  };
 }
 
 export default withLanguage(
-    withFormik<BillingFormProps & WithLanguageProps, BillingFormValues>({
-        handleSubmit: (values, { props: { onSubmit } }) => {
-            onSubmit(values);
-        },
-        mapPropsToValues: ({ getFields, customerMessage, billingAddress }) => ({
-            ...mapAddressToFormValues(
-                getFields(billingAddress && billingAddress.countryCode),
-                billingAddress,
-            ),
-            orderComment: customerMessage,
-        }),
-        isInitialValid: ({ billingAddress, getFields, language }) =>
-            !!billingAddress &&
+  withFormik<BillingFormProps & WithLanguageProps, BillingFormValues>({
+    handleSubmit: (values, { props: { onSubmit } }) => {
+      onSubmit(values);
+    },
+    mapPropsToValues: ({ getFields, customerMessage, billingAddress }) => ({
+      ...mapAddressToFormValues(
+        getFields(billingAddress && billingAddress.countryCode),
+        billingAddress,
+      ),
+      orderComment: customerMessage,
+    }),
+    isInitialValid: ({ billingAddress, getFields, language }) =>
+      !!billingAddress &&
+      getAddressFormFieldsValidationSchema({
+        language,
+        formFields: getFields(billingAddress.countryCode),
+      }).isValidSync(billingAddress),
+    validationSchema: ({ language, getFields, methodId }: BillingFormProps & WithLanguageProps) =>
+      methodId === 'amazonpay'
+        ? lazy<Partial<AddressFormValues>>((values) =>
+            getCustomFormFieldsValidationSchema({
+              translate: getTranslateAddressError(language),
+              formFields: getFields(values && values.countryCode),
+            }),
+          )
+        : lazy<Partial<AddressFormValues>>((values) =>
             getAddressFormFieldsValidationSchema({
-                language,
-                formFields: getFields(billingAddress.countryCode),
-            }).isValidSync(billingAddress),
-        validationSchema: ({
-            language,
-            getFields,
-            methodId,
-        }: BillingFormProps & WithLanguageProps) =>
-            methodId === 'amazonpay'
-                ? lazy<Partial<AddressFormValues>>((values) =>
-                      getCustomFormFieldsValidationSchema({
-                          translate: getTranslateAddressError(language),
-                          formFields: getFields(values && values.countryCode),
-                      }),
-                  )
-                : lazy<Partial<AddressFormValues>>((values) =>
-                      getAddressFormFieldsValidationSchema({
-                          language,
-                          formFields: getFields(values && values.countryCode),
-                      }),
-                  ),
-        enableReinitialize: true,
-    })(BillingForm),
+              language,
+              formFields: getFields(values && values.countryCode),
+            }),
+          ),
+    enableReinitialize: true,
+  })(BillingForm),
 );

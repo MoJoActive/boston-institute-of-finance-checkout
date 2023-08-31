@@ -120,8 +120,6 @@ class BillingForm extends PureComponent<
                 countryCode={values.countryCode}
                 formFields={editableFormFields
                   .map((o) => {
-                    console.log(o);
-
                     if (o.name === 'firstName') {
                       return { ...o, label: 'Billing First Name' };
                     }

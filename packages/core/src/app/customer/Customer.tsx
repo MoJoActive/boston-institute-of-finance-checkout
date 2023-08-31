@@ -1,4 +1,5 @@
 import {
+  Address,
     CheckoutSelectors,
     CustomerAccountRequestBody,
     CustomerCredentials,
@@ -81,6 +82,7 @@ export interface WithCheckoutCustomerProps {
   sendLoginEmail(params: { email: string }): Promise<CheckoutSelectors>;
   signIn(credentials: CustomerCredentials): Promise<CheckoutSelectors>;
   createAccount(values: CustomerAccountRequestBody): Promise<CheckoutSelectors>;
+  updateShippingAddress(address: Partial<Address>): Promise<CheckoutSelectors>;
 }
 
 export interface CustomerState {
@@ -253,6 +255,7 @@ class Customer extends Component<
       requiresMarketingConsent,
       isFloatingLabelEnabled,
       createAccount,
+      updateShippingAddress,
       signIn,
     } = this.props;
 
@@ -267,6 +270,7 @@ class Customer extends Component<
         onSubmit={this.handleCreateAccount}
         requiresMarketingConsent={requiresMarketingConsent}
         signIn={signIn}
+        updateShippingAddress={updateShippingAddress}
       />
     );
   }
@@ -533,12 +537,15 @@ export function mapToWithCheckoutCustomerProps({
     },
   } = config as StoreConfig & { checkoutSettings: { isAccountCreationEnabled: boolean } };
 
+
+
   return {
     customerAccountFields: getCustomerAccountFields(),
     canSubscribe: config.shopperConfig.showNewsletterSignup,
     checkoutButtonIds: config.checkoutSettings.remoteCheckoutProviders,
     clearError: checkoutService.clearError,
     createAccount: checkoutService.createCustomerAccount,
+    updateShippingAddress: checkoutService.updateShippingAddress,
     continueAsGuest: checkoutService.continueAsGuest,
     sendLoginEmail: checkoutService.sendSignInEmail,
     defaultShouldSubscribe: config.shopperConfig.defaultNewsletterSignup,

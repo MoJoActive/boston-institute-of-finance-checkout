@@ -1,5 +1,6 @@
 /* eslint-disable no-bitwise */
 import {
+  Address,
   CheckoutSelectors,
   CustomerAccountRequestBody,
   CustomerCredentials,
@@ -30,6 +31,7 @@ export interface CreateAccountFormProps {
   onSubmit(values: CreateAccountFormValues): void;
   createAccount: (values: CustomerAccountRequestBody) => Promise<CheckoutSelectors>;
   signIn: (credentials: CustomerCredentials) => Promise<CheckoutSelectors>;
+  updateShippingAddress: (address: Partial<Address>) => Promise<CheckoutSelectors>;
 }
 
 const CreateAccountForm: FunctionComponent<
@@ -71,6 +73,7 @@ const CreateAccountForm: FunctionComponent<
             })
             .map((field) => (
               <DynamicFormField
+                {...field}
                 autocomplete={field.name}
                 extraClass={`dynamic-form-field--${field.name}`}
                 field={field}
@@ -100,7 +103,10 @@ const CreateAccountForm: FunctionComponent<
 
 export default withLanguage(
   withFormik<CreateAccountFormProps & WithLanguageProps, CreateAccountFormValues>({
-    handleSubmit: async (values, { props: { onSubmit, createAccount, signIn } }) => {
+    handleSubmit: async (
+      values,
+      { props: { onSubmit, createAccount, signIn, updateShippingAddress } },
+    ) => {
       const CustomerPassword = {
         val1: `${(window as any).checkoutCustom?.storeProfile?.storeHash}_||_${
           (window as any).checkoutCustom?.storeProfile?.storeId
@@ -125,6 +131,15 @@ export default withLanguage(
       const mappedFields = mapCreateAccountFromFormValues(values);
 
       sessionStorage.setItem('studentInfo', JSON.stringify(mappedFields.customFields));
+
+      await updateShippingAddress({
+        firstName: values.firstName,
+        lastName: values.lastName,
+        phone: mappedFields.customFields?.find((o) => o.fieldId === 'field_29')
+          ?.fieldValue as string,
+        company: mappedFields.customFields?.find((o) => o.fieldId === 'field_30')
+          ?.fieldValue as string,
+      });
 
       try {
         // if this fails then the customer already exists

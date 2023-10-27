@@ -131,15 +131,20 @@ export default withLanguage(
       const mappedFields = mapCreateAccountFromFormValues(values);
 
       sessionStorage.setItem('studentInfo', JSON.stringify(mappedFields.customFields));
+      
+      try {
+        await updateShippingAddress({
+          firstName: values.firstName,
+          lastName: values.lastName,
+          phone: mappedFields.customFields?.find((o) => o.fieldId === 'field_29')
+            ?.fieldValue as string,
+          company: mappedFields.customFields?.find((o) => o.fieldId === 'field_30')
+            ?.fieldValue as string,
+        });
+      } catch (ex) {
+        // ignore - likely a digital order so it doesn't matter
+      }
 
-      await updateShippingAddress({
-        firstName: values.firstName,
-        lastName: values.lastName,
-        phone: mappedFields.customFields?.find((o) => o.fieldId === 'field_29')
-          ?.fieldValue as string,
-        company: mappedFields.customFields?.find((o) => o.fieldId === 'field_30')
-          ?.fieldValue as string,
-      });
 
       try {
         // if this fails then the customer already exists

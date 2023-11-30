@@ -4,8 +4,6 @@ import { FieldProps } from 'formik';
 import { includes } from 'lodash';
 import React, { FunctionComponent, memo, ReactNode, useCallback, useMemo } from 'react';
 
-import { TranslatedString } from '@bigcommerce/checkout/locale';
-
 import CheckboxGroupFormField from './CheckboxGroupFormField';
 import DynamicFormFieldType from './DynamicFormFieldType';
 import DynamicInput from './DynamicInput';
@@ -69,9 +67,6 @@ const DynamicFormField: FunctionComponent<DynamicFormFieldProps> = ({
                 {!required && (
                     <>
                         {' '}
-                        <small className="optimizedCheckout-contentSecondary">
-                            <TranslatedString id="common.optional_text" />
-                        </small>
                     </>
                 )}
             </Label>

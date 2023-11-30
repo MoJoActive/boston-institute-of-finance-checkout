@@ -21,7 +21,6 @@ export interface CheckoutStepHeaderProps {
 }
 
 const CheckoutStepHeader: FunctionComponent<CheckoutStepHeaderProps> = ({
-    heading,
     isActive,
     isComplete,
     isEditable,
@@ -46,7 +45,7 @@ const CheckoutStepHeader: FunctionComponent<CheckoutStepHeaderProps> = ({
                     )}
                 />
 
-                <h2 className="stepHeader-title optimizedCheckout-headingPrimary">{heading}</h2>
+                <h2 className="stepHeader-title optimizedCheckout-headingPrimary">Student</h2>
             </div>
 
             <div

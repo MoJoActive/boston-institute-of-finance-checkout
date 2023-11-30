@@ -62,11 +62,11 @@ const CreateAccountForm: FunctionComponent<
               }
 
               if (field.label === 'Phone') {
-                return { ...field, label: 'Student Phone' };
+                return { ...field, label: 'Student Phone', required: true };
               }
 
               if (field.label === 'Company') {
-                return { ...field, label: 'Student Company' };
+                return { ...field, label: 'Student Company', required: true };
               }
 
               return field;

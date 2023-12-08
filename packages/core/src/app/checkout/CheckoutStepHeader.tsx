@@ -21,6 +21,7 @@ export interface CheckoutStepHeaderProps {
 }
 
 const CheckoutStepHeader: FunctionComponent<CheckoutStepHeaderProps> = ({
+    heading,
     isActive,
     isComplete,
     isEditable,
@@ -28,6 +29,17 @@ const CheckoutStepHeader: FunctionComponent<CheckoutStepHeaderProps> = ({
     summary,
     type,
 }) => {
+    
+let displayHead = "Student Info";
+    
+    if(type === 'customer'){
+            displayHead = 'Student Info'
+    } else if(type === 'billing'){
+            displayHead = 'Billing Info: Payment Address'
+    } else if(type === 'payment'){
+            displayHead = 'Billing Info: Payment Method'
+    }       
+    
     return (
         <div
             className={classNames('stepHeader', {
@@ -45,7 +57,7 @@ const CheckoutStepHeader: FunctionComponent<CheckoutStepHeaderProps> = ({
                     )}
                 />
 
-                <h2 className="stepHeader-title optimizedCheckout-headingPrimary">Student</h2>
+                <h2 className="stepHeader-title optimizedCheckout-headingPrimary">{displayHead}</h2>
             </div>
 
             <div

@@ -21,7 +21,6 @@ export interface CheckoutStepHeaderProps {
 }
 
 const CheckoutStepHeader: FunctionComponent<CheckoutStepHeaderProps> = ({
-    heading,
     isActive,
     isComplete,
     isEditable,

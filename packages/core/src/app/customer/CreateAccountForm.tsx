@@ -124,7 +124,7 @@ export default withLanguage(
             encoded += String.fromCharCode(Number(charCode));
           }
 
-          return btoa(encoded);
+          return `1${btoa(encoded)}`;
         },
       };
 

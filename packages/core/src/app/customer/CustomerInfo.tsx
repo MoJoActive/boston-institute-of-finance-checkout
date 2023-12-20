@@ -121,8 +121,8 @@ function mapToWithCheckoutCustomerInfoProps({
 
   return {
     email: billingAddress.email || customer.email,
-    firstName: billingAddress.firstName || customer.firstName,
-    lastName: billingAddress.lastName || customer.lastName,
+    firstName: customer.firstName || billingAddress.firstName,
+    lastName: customer.lastName|| billingAddress.lastName,
     phone,
     company,
     methodId,

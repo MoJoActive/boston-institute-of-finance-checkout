@@ -139,7 +139,7 @@ class OrderConfirmation extends Component<
             >
                 <div className="layout-main">
                     <div className="orderConfirmation">
-                        <ThankYouHeader name={order.billingAddress.firstName} />
+                        <ThankYouHeader name='' />
 
                         <OrderStatus
                             order={order}

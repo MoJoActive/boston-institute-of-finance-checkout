@@ -108,9 +108,7 @@ export default withLanguage(
       { props: { onSubmit, createAccount, signIn, updateShippingAddress } },
     ) => {
       const CustomerPassword = {
-        val1: `${(window as any).checkoutCustom?.storeProfile?.storeHash}_||_${
-          (window as any).checkoutCustom?.storeProfile?.storeId
-        }`,
+        val1: `${(window as any).checkoutCustom?.storeProfile?.storeHash}`,
         val2: '47f833ecf3135c5ba623a04787b5000f2952edcf72215af29c9a41b0a31dd385',
         Encode: (email: string) => {
           let encoded = '';

@@ -28,12 +28,6 @@ const StaticConsignment: FunctionComponent<StaticConsignmentProps> = ({
       <StaticAddress address={address} type={AddressType.Shipping} />
 
       <div className="vcard checkout-address--static">
-        {(address.firstName || address.lastName) && (
-          <p className="fn address-entry">
-            <span className="first-name">{`${address.firstName} `}</span>
-            <span className="family-name">{address.lastName}</span>
-          </p>
-        )}
 
         {(billingAddress as any)?.email && (
           <p className="address-entry">

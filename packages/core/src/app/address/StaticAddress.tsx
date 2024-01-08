@@ -51,13 +51,7 @@ const StaticAddress: FunctionComponent<
                 </p>
             )}
 
-            {(address.phone || address.company) && (
-                <p className="address-entry">
-                    <span className="company-name">{`${address.company} `}</span>
-                    <span className="tel">{address.phone}</span>
-                </p>
-            )}
-
+            
             <div className="adr">
                 <p className="street-address address-entry">
                     <span className="address-line-1">{`${address.address1} `}</span>

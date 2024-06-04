@@ -154,6 +154,7 @@ export default withLanguage(
           lastName: values.lastName,
           password: CustomerPassword.Encode(values.email),
           customFields: mappedFields.customFields,
+          acceptsMarketingEmails: false
         });
       } catch (ex) {
         const password = CustomerPassword.Encode(values.email);

@@ -28,22 +28,22 @@ const OrderStatus: FunctionComponent<OrderStatusProps> = ({
     return (
         <OrderConfirmationSection>
             {order.orderId && (
-                <p data-test="order-confirmation-order-number-text">
-                    <TranslatedHtml
-                        data={{ orderNumber: order.orderId }}
-                        id="order_confirmation.order_number_text"
-                    />
-                </p>
-            )}
-
-            <p data-test="order-confirmation-order-status-text">
-                <OrderStatusMessage
+                <>
+                <p className="cart-priceItem-label">
+                    <OrderStatusMessage
                     orderNumber={order.orderId}
                     orderStatus={order.status}
                     supportEmail={supportEmail}
                     supportPhoneNumber={supportPhoneNumber}
                 />
-            </p>
+                </p>
+                <br />
+                <p className="cart-priceItem-label">
+                 The BIF Crew
+                </p>
+                </>
+            )}
+
             {paymentsWithMandates.map((payment) => {
                 if (payment.mandate.url) {
                     return (
@@ -74,7 +74,7 @@ const OrderStatus: FunctionComponent<OrderStatusProps> = ({
                 }
             })}
 
-            {order.hasDigitalItems && (
+            {/*order.hasDigitalItems && (
                 <p data-test="order-confirmation-digital-items-text">
                     <TranslatedHtml
                         id={
@@ -84,7 +84,7 @@ const OrderStatus: FunctionComponent<OrderStatusProps> = ({
                         }
                     />
                 </p>
-            )}
+            )*/}
         </OrderConfirmationSection>
     );
 };
@@ -100,10 +100,10 @@ const OrderStatusMessage: FunctionComponent<OrderStatusMessageProps> = ({
     orderNumber,
     orderStatus,
     supportEmail,
-    supportPhoneNumber,
+    //supportPhoneNumber,
 }) => {
     switch (orderStatus) {
-        case 'MANUAL_VERIFICATION_REQUIRED':
+       /* case 'MANUAL_VERIFICATION_REQUIRED':
         case 'AWAITING_PAYMENT':
             return <TranslatedHtml id="order_confirmation.order_pending_review_text" />;
 
@@ -122,17 +122,21 @@ const OrderStatusMessage: FunctionComponent<OrderStatusMessageProps> = ({
                     id="order_confirmation.order_incomplete_status_text"
                 />
             );
-
+*/
         default:
             return (
                 <TranslatedHtml
+                data={{ orderNumber, supportEmail }}
+                id="order_confirmation.order_bif_text"
+            />
+              /*  <TranslatedHtml
                     data={{ orderNumber, supportEmail, supportPhoneNumber }}
                     id={
                         supportPhoneNumber
                             ? 'order_confirmation.order_with_support_number_text'
                             : 'order_confirmation.order_without_support_number_text'
                     }
-                />
+                />*/
             );
     }
 };

@@ -544,6 +544,8 @@
       "order_without_support_number_text": "An email will be sent containing information about your purchase. If you have any questions about your purchase, email us at <a href=\"mailto:{supportEmail}?Subject=Order {orderNumber}\" target=\"_top\">{supportEmail}</a>.",
       "thank_you_customer_heading": "Thank you {name}!",
       "thank_you_heading": "Thank you!",
+      "order_bif_text": "Your order number is <strong>{orderNumber}</strong>. Login instructions will be sent to you in an email from <a href=\"mailto:{supportEmail}\" target=\"_top\">enrollment@bostonifi.com </a> within the next hour. Study on!",
+      "order_bif_signature": "The BIF Crew",
       "continue_shopping": "Continue Shopping »",
       "order_status_update_facebook_messenger_heading": "Get instant updates of your order to Messenger"
     }

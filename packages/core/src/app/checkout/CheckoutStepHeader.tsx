@@ -29,10 +29,10 @@ const CheckoutStepHeader: FunctionComponent<CheckoutStepHeaderProps> = ({
     type,
 }) => {
     
-let displayHead = "Student Info: Shipping Address";
+let displayHead = "Candidate / Certificant Info: Shipping Address";
     
     if(type === 'customer'){
-            displayHead = 'Student Info'
+            displayHead = 'Candidate / Certificant Info'
     } else if(type === 'billing'){
             displayHead = 'Billing Info: Payment Address'
     } else if(type === 'payment'){

@@ -21,9 +21,7 @@ export function getStudentCompanyFromSession(): string | undefined {
         ?.fieldValue;
 }
 
-export function applyStudentPhoneToAddress<T extends { phone?: string; company?: string }>(
-    address: T,
-): T {
+export function applyStudentPhoneToAddress<T extends object>(address: T): T {
     const phone = getStudentPhoneFromSession();
     const company = getStudentCompanyFromSession();
 

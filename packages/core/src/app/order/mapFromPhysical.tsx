@@ -1,13 +1,12 @@
 import { PhysicalItem } from '@bigcommerce/checkout-sdk';
 
-import getDisplayQuantity from './getDisplayQuantity';
 import getOrderSummaryItemImage from './getOrderSummaryItemImage';
 import { OrderSummaryItemProps } from './OrderSummaryItem';
 
 function mapFromPhysical(item: PhysicalItem): OrderSummaryItemProps {
     return {
         id: item.id,
-        quantity: getDisplayQuantity(item),
+        quantity: item.quantity,
         amount: item.extendedComparisonPrice,
         amountAfterDiscount: item.extendedSalePrice,
         name: item.name,

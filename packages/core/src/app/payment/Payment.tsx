@@ -1,4 +1,5 @@
 import {
+  Address,
   CartChangedError,
   CheckoutSelectors,
   CheckoutSettings,
@@ -28,6 +29,7 @@ import {
   isErrorWithType,
 } from '../common/error';
 import { EMPTY_ARRAY } from '../common/utility';
+import { applyStudentPhoneToAddress } from '../customer/getStudentInfoFromSession';
 import { TermsConditionsType } from '../termsConditions';
 
 import mapSubmitOrderErrorMessage, { mapSubmitOrderErrorTitle } from './mapSubmitOrderErrorMessage';
@@ -77,6 +79,8 @@ interface WithCheckoutPaymentProps {
   loadCheckout(): Promise<CheckoutSelectors>;
   loadPaymentMethods(): Promise<CheckoutSelectors>;
   submitOrder(values: OrderRequestBody): Promise<CheckoutSelectors>;
+  updateBillingAddress(address: Partial<Address>): Promise<CheckoutSelectors>;
+  billingAddress?: Address;
 }
 
 interface PaymentState {
@@ -438,6 +442,8 @@ class Payment extends Component<
       onSubmit = noop,
       onSubmitError = noop,
       submitOrder,
+      updateBillingAddress,
+      billingAddress,
       analyticsTracker,
     } = this.props;
 
@@ -454,6 +460,11 @@ class Payment extends Component<
     }
 
     try {
+      const studentPhone = applyStudentPhoneToAddress(billingAddress || { phone: '' });
+
+      if (billingAddress && studentPhone.phone && studentPhone.phone !== billingAddress.phone)
+        await updateBillingAddress(studentPhone);
+
       const state = await submitOrder(mapToOrderRequestBody(values, isPaymentDataRequired()));
       const order = state.data.getOrder();
 
@@ -540,6 +551,7 @@ export function mapToPaymentProps({
       getOrder,
       getPaymentMethod,
       getPaymentMethods,
+      getBillingAddress,
       isPaymentDataRequired,
     },
     errors: { getFinalizeOrderError, getSubmitOrderError },
@@ -631,6 +643,8 @@ export function mapToPaymentProps({
     shouldLocaliseErrorMessages: features['PAYMENTS-6799.localise_checkout_payment_error_messages'],
     submitOrder: checkoutService.submitOrder,
     submitOrderError: getSubmitOrderError(),
+    updateBillingAddress: checkoutService.updateBillingAddress,
+    billingAddress: getBillingAddress(),
     termsConditionsText:
       isTermsConditionsRequired && termsConditionsType === TermsConditionsType.TextArea
         ? termsCondtitionsText

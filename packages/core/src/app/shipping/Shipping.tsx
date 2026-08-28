@@ -25,6 +25,7 @@ import { isEqualAddress, mapAddressFromFormValues } from '../address';
 import { withCheckout } from '../checkout';
 import CheckoutStepStatus from '../checkout/CheckoutStepStatus';
 import { EMPTY_ARRAY, isFloatingLabelEnabled } from '../common/utility';
+import { applyStudentPhoneToAddress } from '../customer/getStudentInfoFromSession';
 import { PaymentMethodId } from '../payment/paymentMethod';
 
 import { UnassignItemError } from './errors';
@@ -227,7 +228,8 @@ class Shipping extends Component<ShippingProps & WithCheckoutShippingProps, Ship
             methodId,
         } = this.props;
 
-        const updatedShippingAddress = addressValues && mapAddressFromFormValues(addressValues);
+        const updatedShippingAddress =
+            addressValues && applyStudentPhoneToAddress(mapAddressFromFormValues(addressValues));
         const promises: Array<Promise<CheckoutSelectors>> = [];
         const hasRemoteBilling = this.hasRemoteBilling(methodId);
 

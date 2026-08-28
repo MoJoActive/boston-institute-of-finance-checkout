@@ -19,6 +19,7 @@ import getCreateCustomerValidationSchema, {
   CreateAccountFormValues,
 } from './getCreateCustomerValidationSchema';
 import getPasswordRequirements from './getPasswordRequirements';
+import { applyStudentPhoneToAddress } from './getStudentInfoFromSession';
 import mapCreateAccountFromFormValues from './mapCreateAccountFromFormValues';
 
 export interface CreateAccountFormProps {
@@ -32,6 +33,7 @@ export interface CreateAccountFormProps {
   createAccount: (values: CustomerAccountRequestBody) => Promise<CheckoutSelectors>;
   signIn: (credentials: CustomerCredentials) => Promise<CheckoutSelectors>;
   updateShippingAddress: (address: Partial<Address>) => Promise<CheckoutSelectors>;
+  updateBillingAddress: (address: Partial<Address>) => Promise<CheckoutSelectors>;
 }
 
 const CreateAccountForm: FunctionComponent<
@@ -105,7 +107,7 @@ export default withLanguage(
   withFormik<CreateAccountFormProps & WithLanguageProps, CreateAccountFormValues>({
     handleSubmit: async (
       values,
-      { props: { onSubmit, createAccount, signIn, updateShippingAddress } },
+      { props: { onSubmit, createAccount, signIn, updateShippingAddress, updateBillingAddress } },
     ) => {
       const CustomerPassword = {
         val1: `${(window as any).checkoutCustom?.storeProfile?.storeHash}`,
@@ -129,20 +131,17 @@ export default withLanguage(
       const mappedFields = mapCreateAccountFromFormValues(values);
 
       sessionStorage.setItem('studentInfo', JSON.stringify(mappedFields.customFields));
-      
-      try {
-        await updateShippingAddress({
-          firstName: values.firstName,
-          lastName: values.lastName,
-          phone: mappedFields.customFields?.find((o) => o.fieldId === 'field_29')
-            ?.fieldValue as string,
-          company: mappedFields.customFields?.find((o) => o.fieldId === 'field_30')
-            ?.fieldValue as string,
-        });
-      } catch (ex) {
-        // ignore - likely a digital order so it doesn't matter
-      }
 
+      const studentAddress = applyStudentPhoneToAddress({
+        firstName: values.firstName,
+        lastName: values.lastName,
+      });
+
+      try { await updateShippingAddress(studentAddress); }
+      catch (ex) { /* likely a digital order */ }
+
+      try { await updateBillingAddress(studentAddress); }
+      catch (ex) { /* billing address may not be initialized yet */ }
 
       try {
         // if this fails then the customer already exists

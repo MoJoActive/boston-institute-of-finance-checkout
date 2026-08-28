@@ -3,13 +3,14 @@ import React from 'react';
 
 import { TranslatedString } from '@bigcommerce/checkout/locale';
 
+import getDisplayQuantity from './getDisplayQuantity';
 import getOrderSummaryItemImage from './getOrderSummaryItemImage';
 import { OrderSummaryItemOption, OrderSummaryItemProps } from './OrderSummaryItem';
 
 function mapFromDigital(item: DigitalItem): OrderSummaryItemProps {
     return {
         id: item.id,
-        quantity: item.quantity,
+        quantity: getDisplayQuantity(item),
         amount: item.extendedListPrice,
         amountAfterDiscount: item.extendedSalePrice,
         name: item.name,

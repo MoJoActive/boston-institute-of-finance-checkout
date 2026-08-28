@@ -9,6 +9,10 @@ import { isErrorWithType } from '../common/error';
 import { Button, ButtonSize, ButtonVariant } from '../ui/button';
 
 import canSignOut, { isSupportedSignoutMethod } from './canSignOut';
+import {
+    getStudentCompanyFromSession,
+    getStudentPhoneFromSession,
+} from './getStudentInfoFromSession';
 
 export interface CustomerInfoProps {
   onSignOut?(event: CustomerSignOutEvent): void;
@@ -111,13 +115,8 @@ function mapToWithCheckoutCustomerInfoProps({
   const methodId =
     checkout.payments && checkout.payments.length === 1 ? checkout.payments[0].providerId : '';
 
-  const studentInfo = JSON.parse(sessionStorage.getItem('studentInfo') || '[]');
-  const phone = studentInfo
-    ? studentInfo?.find((o: any) => o.fieldId === 'field_29')?.fieldValue
-    : null;
-  const company = studentInfo
-    ? studentInfo?.find((o: any) => o.fieldId === 'field_30')?.fieldValue
-    : null;
+  const phone = getStudentPhoneFromSession();
+  const company = getStudentCompanyFromSession();
 
   return {
     email: billingAddress.email || customer.email,

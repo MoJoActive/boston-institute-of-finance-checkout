@@ -83,6 +83,7 @@ export interface WithCheckoutCustomerProps {
   signIn(credentials: CustomerCredentials): Promise<CheckoutSelectors>;
   createAccount(values: CustomerAccountRequestBody): Promise<CheckoutSelectors>;
   updateShippingAddress(address: Partial<Address>): Promise<CheckoutSelectors>;
+  updateBillingAddress(address: Partial<Address>): Promise<CheckoutSelectors>;
 }
 
 export interface CustomerState {
@@ -256,6 +257,7 @@ class Customer extends Component<
       isFloatingLabelEnabled,
       createAccount,
       updateShippingAddress,
+      updateBillingAddress,
       signIn,
     } = this.props;
 
@@ -270,6 +272,7 @@ class Customer extends Component<
         onSubmit={this.handleCreateAccount}
         requiresMarketingConsent={requiresMarketingConsent}
         signIn={signIn}
+        updateBillingAddress={updateBillingAddress}
         updateShippingAddress={updateShippingAddress}
       />
     );
@@ -546,6 +549,7 @@ export function mapToWithCheckoutCustomerProps({
     clearError: checkoutService.clearError,
     createAccount: checkoutService.createCustomerAccount,
     updateShippingAddress: checkoutService.updateShippingAddress,
+    updateBillingAddress: checkoutService.updateBillingAddress,
     continueAsGuest: checkoutService.continueAsGuest,
     sendLoginEmail: checkoutService.sendSignInEmail,
     defaultShouldSubscribe: config.shopperConfig.defaultNewsletterSignup,

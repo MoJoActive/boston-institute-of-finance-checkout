@@ -14,6 +14,7 @@ import { AddressFormSkeleton } from '@bigcommerce/checkout/ui';
 
 import { isEqualAddress, mapAddressFromFormValues } from '../address';
 import { withCheckout } from '../checkout';
+import { applyStudentPhoneToAddress } from '../customer/getStudentInfoFromSession';
 import { EMPTY_ARRAY, isFloatingLabelEnabled } from '../common/utility';
 import { getShippableItemsCount } from '../shipping';
 
@@ -93,7 +94,7 @@ class Billing extends Component<BillingProps & WithCheckoutBillingProps> {
         } = this.props;
 
         const promises: Array<Promise<CheckoutSelectors>> = [];
-        const address = mapAddressFromFormValues(addressValues);
+        const address = applyStudentPhoneToAddress(mapAddressFromFormValues(addressValues));
 
         if (address && !isEqualAddress(address, billingAddress)) {
             promises.push(updateAddress(address));
